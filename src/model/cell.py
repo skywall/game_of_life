@@ -19,3 +19,9 @@ class Cell:
 
     def value(self):
         return int(self.health == Health.ALIVE)
+
+    def color(self):
+        if self.health == Health.ALIVE:
+            return 0, 0, 0
+        else:
+            return 255, 255, 255

@@ -1,4 +1,5 @@
 import numpy as np
+import pygame as pg
 
 from src import rules
 from src.model.cell import Cell, Health
@@ -7,7 +8,7 @@ from src.model.cell import Cell, Health
 class Board:
     rows = 0
     cols = 0
-    matrix = np.empty((0,0))
+    matrix: np.ndarray = None
 
     def __init__(self, rows=20, cols=20):
         self.set_board_size(rows, cols)
@@ -25,8 +26,8 @@ class Board:
         # noinspection PyTypeChecker
         self.matrix.fill(Cell(Health.DEAD))
 
-        for x, row in enumerate(data):
-            for y, item in enumerate(row):
+        for y, row in enumerate(data):
+            for x, item in enumerate(row):
                 if item == "\n":
                     continue
 
@@ -50,6 +51,37 @@ class Board:
 
         self.rows = rows
         self.cols = cols
+
+    def draw(self, screen, grid_size):
+        for x in range(self.rows):
+            for y in range(self.cols):
+                rect = pg.Rect(x * grid_size + 1, y * grid_size + 1, grid_size - 2, grid_size - 2)
+                pg.draw.rect(screen, self.matrix[x, y].color(), rect)
+
+    def handle_click(self, pos, grid_size):
+        x = pos[0] // grid_size
+        y = pos[1] // grid_size
+
+        cell = self.matrix[x, y]
+        if cell.health == Health.ALIVE:
+            self.matrix[x, y] = Cell(Health.DEAD)
+        else:
+            self.matrix[x, y] = Cell(Health.ALIVE)
+
+    def increase_size(self):
+        self.matrix = np.resize(self.matrix, (self.rows + 1, self.cols + 1))
+        self.rows += 1
+        self.cols += 1
+
+    # noinspection PyTypeChecker
+    def decrease_size(self):
+        self.matrix = self.matrix[0:-1, 0:-1]
+        self.rows -= 1
+        self.cols -= 1
+
+    def clear(self):
+        # noinspection PyTypeChecker
+        self.matrix.fill(Cell(Health.DEAD))
 
     def __get_alive_neighbors_count(self, x, y):
         count = 0

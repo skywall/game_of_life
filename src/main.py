@@ -1,4 +1,5 @@
-from src.model.board import Board
+from src.model.game import Game
+import pygame as pg
 
 
 def read_file(file_path):
@@ -6,14 +7,9 @@ def read_file(file_path):
         return f.readlines()
 
 
-def main():
-    board = Board()
-    board.load(read_file("../zygotes/2"))
-
-    for it in range(10):
-        board.next_gen()
-        print(board)
-
-
 if __name__ == '__main__':
-    main()
+    pg.init()
+    pg.display.set_caption("Game Of Life")
+
+    zygote = read_file("../zygotes/2")
+    Game(zygote).run()
